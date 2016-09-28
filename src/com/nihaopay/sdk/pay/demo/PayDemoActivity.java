@@ -30,16 +30,16 @@ public class PayDemoActivity extends FragmentActivity {
 			case SDK_PAY_FLAG: {
 				NihaopayResult payResult = new NihaopayResult((String) msg.obj);
 
-				String resultStatus = payResult.getResultStatus();
+				String resultStatus = payResult.getStatus();
 
-				// 判断resultStatus 为“9000”则代表支付成功，具体状态码代表含义可参考接口文档
-				if (TextUtils.equals(resultStatus, "9000")) {
+				// 判断resultStatus 为“success”则代表支付成功，具体状态码代表含义可参考接口文档
+				if (TextUtils.equals(resultStatus, "success")) {
 					Toast.makeText(PayDemoActivity.this, "支付成功",
 							Toast.LENGTH_SHORT).show();
 				} else {
-					// 判断resultStatus 为非“9000”则代表可能支付失败
-					// “8000”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
-					if (TextUtils.equals(resultStatus, "8000")) {
+					// 判断resultStatus 为非“success”则代表可能支付失败
+					// “pending”代表支付结果因为支付渠道原因或者系统原因还在等待支付结果确认，最终交易是否成功以服务端异步通知为准（小概率状态）
+					if (TextUtils.equals(resultStatus, "pending")) {
 						Toast.makeText(PayDemoActivity.this, "支付结果确认中",
 								Toast.LENGTH_SHORT).show();
 
@@ -88,21 +88,6 @@ public class PayDemoActivity extends FragmentActivity {
 							}).show();
 			return;
 		}
-		// 订单
-//		String orderInfo = getOrderInfo("测试的商品", "该测试商品的详细描述", "0.01");
-
-//		// 对订单做RSA 签名
-//		String sign = sign(orderInfo);
-//		try {
-//			// 仅需对sign 做URL编码
-//			sign = URLEncoder.encode(sign, "UTF-8");
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//		}
-//
-//		// 完整的符合支付宝参数规范的订单信息
-//		final String payInfo = orderInfo + "&sign=\"" + sign + "\"&"
-//				+ getSignType();
 		
 		final String payInfo = getPayInfo("http://www.baiu.com", "1", "USD");
 		
@@ -177,7 +162,7 @@ public class PayDemoActivity extends FragmentActivity {
 		// 商户网站唯一订单号
 		orderInfo += "&reference=" +  getOutTradeNo() ;
 
-		// 商品名称
+		// 后台通知url
 		orderInfo += "&ipn_url=" +  ipn_url ;
 		
 		String note = "it is test";
@@ -206,14 +191,6 @@ public class PayDemoActivity extends FragmentActivity {
 		key = key + r.nextInt();
 		key = key.substring(0, 15);
 		return key;
-	}
-
-	/**
-	 * get the sign type we use. 获取签名方式
-	 * 
-	 */
-	public String getSignType() {
-		return "sign_type=\"RSA\"";
 	}
 
 }
